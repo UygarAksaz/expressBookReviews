@@ -24,35 +24,66 @@ public_users.post("/register", (req,res) => {
 
 });
 
+function getBookNames() {
+    return new Promise((resolve, reject) => {
+        resolve(JSON.stringify(books, null, 4));
+    })
+}
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  return res.send(JSON.stringify(books, null, 4));
+  getBookNames().then((books) => {
+    return res.send(books);
+  })
 });
+
+function getBookDetailsISBN(isbn) {
+    return new Promise((resolve, reject) => {
+        resolve(books[isbn]);
+    })
+}
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
-
-  return res.send(books[isbn]);
- });
   
+  getBookDetailsISBN(isbn).then((bookDetails) => {
+    return res.send(bookDetails);
+  })
+});
+
+function getBookDetailsAuthor(author) {
+    return new Promise((resolve, reject) => {
+        const book_details = Object.values(books);
+        const books_detailed = book_details.filter((book_detail) => book_detail.author === author);
+        resolve(JSON.stringify(books_detailed, null, 4));
+    })
+}
+
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
-  const book_details = Object.values(books);
-  const books_detailed = book_details.filter((book_detail) => book_detail.author === author);
   
-  return res.send(JSON.stringify(books_detailed, null, 4));
-
+  getBookDetailsAuthor(author).then((bookDetails) => {
+    return res.send(bookDetails);
+  })
 });
+
+function getBookDetailsTitle(title) {
+    return new Promise((resolve, reject) => {
+        const book_details = Object.values(books);
+        const books_detailed = book_details.filter((book_detail) => book_detail.title === title);
+        resolve(JSON.stringify(books_detailed, null, 4));
+    })
+}
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     const title = req.params.title;
-    const book_details = Object.values(books);
-    const books_detailed = book_details.filter((book_detail) => book_detail.title === title);
-    
-    return res.send(JSON.stringify(books_detailed, null, 4));
+
+    getBookDetailsTitle(title).then((bookDetails) => {
+        return res.send(bookDetails);
+    })
 });
 
 //  Get book review
